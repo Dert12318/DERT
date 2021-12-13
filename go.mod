@@ -1,4 +1,4 @@
-module Go-DERT-Log
+module github.com/Dert12318/Go-DERT-Log
 
 go 1.17
 
