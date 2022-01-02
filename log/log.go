@@ -65,7 +65,7 @@ func (e *LogMenu) ConfigLogPostgres(postgresDB *gorm.DB, NameTable string) *LogM
 }
 
 func (e *LogMenu) WriteToLogPostgres() (*LogMenu, error) {
-	errCreate := e.PostgresConfigLog.postgresDB.AutoMigrate(e.PostgresConfigLog.PostgresLog)
+	errCreate := e.PostgresConfigLog.postgresDB.AutoMigrate(&e.PostgresConfigLog.PostgresLog)
 	if errCreate != nil {
 		fmt.Println("error :", errCreate)
 		return e, errCreate
@@ -75,13 +75,13 @@ func (e *LogMenu) WriteToLogPostgres() (*LogMenu, error) {
 		fmt.Println("error :", err)
 		return e, err
 	}
-	if !e.PostgresConfigLog.postgresDB.Migrator().HasTable(e.PostgresConfigLog.NameTable) {
-		err2 := e.PostgresConfigLog.postgresDB.Migrator().RenameTable(e.PostgresConfigLog.PostgresLog, e.PostgresConfigLog.NameTable)
-		if err2 != nil {
-			fmt.Println("error :", err2)
-			return e, err2
-		}
-	}
+	// if !e.PostgresConfigLog.postgresDB.Migrator().HasTable(e.PostgresConfigLog.NameTable) {
+	// 	err2 := e.PostgresConfigLog.postgresDB.Migrator().RenameTable(e.PostgresConfigLog.PostgresLog, e.PostgresConfigLog.NameTable)
+	// 	if err2 != nil {
+	// 		fmt.Println("error :", err2)
+	// 		return e, err2
+	// 	}
+	// }
 
 	return e, nil
 }
