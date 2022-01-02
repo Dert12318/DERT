@@ -5,6 +5,11 @@ import (
 	"github.com/Dert12318/Go-DERT-Log/log"
 )
 
-var logging log.LogMenu
-var connectionElastic connection.ElasticConfig
-var connectionPostgres connection.PostgresConfig
+type Menu struct {
+	logging            log.LogMenu
+	connectionElastic  connection.ElasticConfig
+	connectionPostgres connection.PostgresConfig
+}
+func(s *Menu) ListMenu () *Menu {
+	return s
+}
