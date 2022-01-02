@@ -1,4 +1,4 @@
-package godertlog
+package log
 
 import (
 	"context"

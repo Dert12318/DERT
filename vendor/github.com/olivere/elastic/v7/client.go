@@ -26,7 +26,7 @@ import (
 
 const (
 	// Version is the current version of Elastic.
-	Version = "7.0.29"
+	Version = "7.0.30"
 
 	// DefaultURL is the default endpoint of Elasticsearch on the local machine.
 	// It is used e.g. when initializing a new Client without a specific URL.
@@ -84,6 +84,9 @@ const (
 )
 
 var (
+	// nilByte is used in JSON marshal/unmarshal
+	nilByte = []byte("null")
+
 	// ErrNoClient is raised when no Elasticsearch node is available.
 	ErrNoClient = errors.New("no Elasticsearch node available")
 
@@ -1499,7 +1502,7 @@ func (c *Client) PerformRequest(ctx context.Context, opt PerformRequestOptions) 
 	duration := time.Now().UTC().Sub(start)
 	c.infof("%s %s [status:%d, request:%.3fs]",
 		strings.ToUpper(opt.Method),
-		req.URL,
+		req.URL.Redacted(),
 		resp.StatusCode,
 		float64(int64(duration/time.Millisecond))/1000)
 
