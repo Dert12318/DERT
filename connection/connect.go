@@ -10,22 +10,22 @@ import (
 
 type PostgresConfig struct {
 	postgresDB *gorm.DB
-	host       string
-	user       string
-	pass       string
-	dbname     string
-	port       string
-	sslmode    string
-	timeZone   string
+	host       string `validate:"required"`
+	user       string `validate:"required"`
+	pass       string `validate:"required"`
+	dbname     string `validate:"required"`
+	port       string `validate:"required"`
+	sslmode    string `validate:"required"`
+	timeZone   string `validate:"required"`
 }
 
 type ElasticConfig struct {
 	elasticDB *elastic.Client
-	host      string
-	port      string
-	user      string
-	password  string
-	setSniff  bool
+	host      string `validate:"required"`
+	port      string `validate:"required"`
+	user      string `validate:"required"`
+	password  string `validate:"required"`
+	setSniff  bool `validate:"required"`
 }
 
 var PostgresLog *gorm.DB
