@@ -1,4 +1,4 @@
-package godertlog
+package main
 
 import (
 	"github.com/Dert12318/Go-DERT-Log/connection"
