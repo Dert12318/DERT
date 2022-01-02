@@ -26,17 +26,17 @@ type ElasticConfigLog struct {
 	elasticDB  *elastic.Client
 	ElasticLog StandartLog
 	ctx        context.Context
-	Indexs     string
+	Indexs     string `validate:"required"`
 }
 
 type StandartLog struct {
-	typeOfElastic string
-	level         string
-	times         string
-	message       string
-	location      string
-	request       string
-	response      string
+	typeOfElastic string `validate:"required"`
+	level         string `validate:"required"`
+	times         string `validate:"required"`
+	message       string `validate:"required"`
+	location      string `validate:"required"`
+	request       string `validate:"required"`
+	response      string `validate:"required"`
 }
 
 func (e *LogMenu) ConfigLogElastic(ctx context.Context, elasticDB *elastic.Client, Indexs string) *LogMenu {
@@ -65,15 +65,10 @@ func (e *LogMenu) ConfigLogPostgres(postgresDB *gorm.DB, NameTable string) *LogM
 }
 
 func (e *LogMenu) WriteToLogPostgres() (*LogMenu, error) {
-	errCreate := e.PostgresConfigLog.postgresDB.AutoMigrate(e.PostgresConfigLog.PostgresLog)
+	errCreate := e.PostgresConfigLog.postgresDB.AutoMigrate(StandartLog{})
 	if errCreate != nil {
 		fmt.Println("error :", errCreate)
 		return e, errCreate
-	}
-	err := e.PostgresConfigLog.postgresDB.Debug().Create(&e.PostgresConfigLog.PostgresLog).Error
-	if err != nil {
-		fmt.Println("error :", err)
-		return e, err
 	}
 	if !e.PostgresConfigLog.postgresDB.Migrator().HasTable(e.PostgresConfigLog.NameTable) {
 		err2 := e.PostgresConfigLog.postgresDB.Migrator().RenameTable(e.PostgresConfigLog.PostgresLog, e.PostgresConfigLog.NameTable)
@@ -82,7 +77,11 @@ func (e *LogMenu) WriteToLogPostgres() (*LogMenu, error) {
 			return e, err2
 		}
 	}
-
+	err := e.PostgresConfigLog.postgresDB.Debug().Create(&e.PostgresConfigLog.PostgresLog).Error
+	if err != nil {
+		fmt.Println("error :", err)
+		return e, err
+	}
 	return e, nil
 }
 
