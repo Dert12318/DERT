@@ -17,38 +17,38 @@ type LogMenu struct {
 }
 
 type PostgresConfigLog struct {
-	postgresDB  *gorm.DB
+	PostgresDB  *gorm.DB
 	PostgresLog StandartLog
 	NameTable   string
 }
 
 type ElasticConfigLog struct {
-	elasticDB  *elastic.Client
+	ElasticDB  *elastic.Client
 	ElasticLog StandartLog
 	ctx        context.Context
-	Indexs     string `validate:"required"`
+	Indexs     string 
 }
 
 type StandartLog struct {
-	typeOfElastic string `validate:"required"`
-	level         string `validate:"required"`
-	times         string `validate:"required"`
-	message       string `validate:"required"`
-	location      string `validate:"required"`
-	request       string `validate:"required"`
-	response      string `validate:"required"`
+	TypeOfElastic string 
+	Level         string 
+	Times         string
+	Message       string 
+	Location      string 
+	Request       string 
+	Response      string 
 }
 
-func (e *LogMenu) ConfigLogElastic(ctx context.Context, elasticDB *elastic.Client, Indexs string) *LogMenu {
+func (e *LogMenu) ConfigLogElastic(ctx context.Context, ElasticDB *elastic.Client, Indexs string) *LogMenu {
 	e.BoolElasticLog = true
 	e.ElasticConfigLog.ctx = ctx
-	e.ElasticConfigLog.elasticDB = elasticDB
+	e.ElasticConfigLog.ElasticDB = ElasticDB
 	e.ElasticConfigLog.Indexs = Indexs
 	return e
 }
 
 func (e *LogMenu) WriteToLogElastic() (*LogMenu, error) {
-	writeIndex, errWriteIndexs := e.ElasticConfigLog.elasticDB.Index().Index(e.ElasticConfigLog.Indexs).BodyJson(e.ElasticConfigLog.ElasticLog).Do(e.ElasticConfigLog.ctx)
+	writeIndex, errWriteIndexs := e.ElasticConfigLog.ElasticDB.Index().Index(e.ElasticConfigLog.Indexs).BodyJson(e.ElasticConfigLog.ElasticLog).Do(e.ElasticConfigLog.ctx)
 	if errWriteIndexs != nil {
 		fmt.Println("error :", errWriteIndexs)
 		return nil, errWriteIndexs
@@ -57,27 +57,27 @@ func (e *LogMenu) WriteToLogElastic() (*LogMenu, error) {
 	return e, nil
 }
 
-func (e *LogMenu) ConfigLogPostgres(postgresDB *gorm.DB, NameTable string) *LogMenu {
+func (e *LogMenu) ConfigLogPostgres(PostgresDB *gorm.DB, NameTable string) *LogMenu {
 	e.BoolPostgresLog = true
-	e.PostgresConfigLog.postgresDB = postgresDB
+	e.PostgresConfigLog.PostgresDB = PostgresDB
 	e.PostgresConfigLog.NameTable = NameTable
 	return e
 }
 
 func (e *LogMenu) WriteToLogPostgres() (*LogMenu, error) {
-	errCreate := e.PostgresConfigLog.postgresDB.AutoMigrate(StandartLog{})
+	errCreate := e.PostgresConfigLog.PostgresDB.AutoMigrate(StandartLog{})
 	if errCreate != nil {
 		fmt.Println("error :", errCreate)
 		return e, errCreate
 	}
-	if !e.PostgresConfigLog.postgresDB.Migrator().HasTable(e.PostgresConfigLog.NameTable) {
-		err2 := e.PostgresConfigLog.postgresDB.Migrator().RenameTable(e.PostgresConfigLog.PostgresLog, e.PostgresConfigLog.NameTable)
+	if !e.PostgresConfigLog.PostgresDB.Migrator().HasTable(e.PostgresConfigLog.NameTable) {
+		err2 := e.PostgresConfigLog.PostgresDB.Migrator().RenameTable(e.PostgresConfigLog.PostgresLog, e.PostgresConfigLog.NameTable)
 		if err2 != nil {
 			fmt.Println("error :", err2)
 			return e, err2
 		}
 	}
-	err := e.PostgresConfigLog.postgresDB.Debug().Create(&e.PostgresConfigLog.PostgresLog).Error
+	err := e.PostgresConfigLog.PostgresDB.Debug().Create(&e.PostgresConfigLog.PostgresLog).Error
 	if err != nil {
 		fmt.Println("error :", err)
 		return e, err
@@ -85,17 +85,17 @@ func (e *LogMenu) WriteToLogPostgres() (*LogMenu, error) {
 	return e, nil
 }
 
-func (e *LogMenu) Errors(index string, message error, level string, location string, request interface{}, response interface{}) (*LogMenu, error) {
+func (e *LogMenu) Errors(index string, Message error, Level string, Location string, Request interface{}, Response interface{}) (*LogMenu, error) {
 	data := StandartLog{}
-	data.level = level
-	data.location = location
-	data.typeOfElastic = "Error"
-	data.message = message.Error()
-	data.times = time.Now().String()
-	strRequest := fmt.Sprintf("%v", request)
-	data.request = strRequest
-	strResponse := fmt.Sprintf("%v", response)
-	data.response = strResponse
+	data.Level = Level
+	data.Location = Location
+	data.TypeOfElastic = "Error"
+	data.Message = Message.Error()
+	data.Times = time.Now().String()
+	strRequest := fmt.Sprintf("%v", Request)
+	data.Request = strRequest
+	strResponse := fmt.Sprintf("%v", Response)
+	data.Response = strResponse
 	if e.BoolElasticLog {
 		e.ElasticConfigLog.ElasticLog = data
 		res, err := e.WriteToLogElastic()
@@ -116,17 +116,17 @@ func (e *LogMenu) Errors(index string, message error, level string, location str
 	return e, nil
 }
 
-func (e *LogMenu) Success(level string, location string, request interface{}, response interface{}) (*LogMenu, error) {
+func (e *LogMenu) Success(Level string, Location string, Request interface{}, Response interface{}) (*LogMenu, error) {
 	data := StandartLog{}
-	data.level = level
-	data.location = location
-	data.typeOfElastic = "Success"
-	data.message = "Success"
-	data.times = time.Now().String()
-	strRequest := fmt.Sprintf("%v", request)
-	data.request = strRequest
-	strResponse := fmt.Sprintf("%v", response)
-	data.response = strResponse
+	data.Level = Level
+	data.Location = Location
+	data.TypeOfElastic = "Success"
+	data.Message = "Success"
+	data.Times = time.Now().String()
+	strRequest := fmt.Sprintf("%v", Request)
+	data.Request = strRequest
+	strResponse := fmt.Sprintf("%v", Response)
+	data.Response = strResponse
 	if e.BoolElasticLog {
 		e.ElasticConfigLog.ElasticLog = data
 		res, err := e.WriteToLogElastic()
@@ -147,17 +147,17 @@ func (e *LogMenu) Success(level string, location string, request interface{}, re
 	return e, nil
 }
 
-func (e *LogMenu) Fatal(level string, message error, location string, request interface{}, response interface{}) (*LogMenu, error) {
+func (e *LogMenu) Fatal(Level string, Message error, Location string, Request interface{}, Response interface{}) (*LogMenu, error) {
 	data := StandartLog{}
-	data.level = level
-	data.location = location
-	data.typeOfElastic = "Fatal"
-	data.message = message.Error()
-	data.times = time.Now().String()
-	strRequest := fmt.Sprintf("%v", request)
-	data.request = strRequest
-	strResponse := fmt.Sprintf("%v", response)
-	data.response = strResponse
+	data.Level = Level
+	data.Location = Location
+	data.TypeOfElastic = "Fatal"
+	data.Message = Message.Error()
+	data.Times = time.Now().String()
+	strRequest := fmt.Sprintf("%v", Request)
+	data.Request = strRequest
+	strResponse := fmt.Sprintf("%v", Response)
+	data.Response = strResponse
 	if e.BoolElasticLog {
 		e.ElasticConfigLog.ElasticLog = data
 		res, err := e.WriteToLogElastic()
@@ -175,5 +175,5 @@ func (e *LogMenu) Fatal(level string, message error, location string, request in
 	//remove data in struct ElasticLog and PostgresLog
 	e.ElasticConfigLog.ElasticLog = StandartLog{}
 	e.PostgresConfigLog.PostgresLog = StandartLog{}
-	panic(message)
+	panic(Message)
 }
