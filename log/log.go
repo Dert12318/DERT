@@ -19,24 +19,23 @@ type LogMenu struct {
 type PostgresConfigLog struct {
 	PostgresDB  *gorm.DB
 	PostgresLog StandartLog
-	NameTable   string
 }
 
 type ElasticConfigLog struct {
 	ElasticDB  *elastic.Client
 	ElasticLog StandartLog
 	ctx        context.Context
-	Indexs     string 
+	Indexs     string
 }
 
 type StandartLog struct {
-	TypeOfElastic string 
-	Level         string 
+	TypeOfElastic string
+	Level         string
 	Times         string
-	Message       string 
-	Location      string 
-	Request       string 
-	Response      string 
+	Message       string
+	Location      string
+	Request       string
+	Response      string
 }
 
 func (e *LogMenu) ConfigLogElastic(ctx context.Context, ElasticDB *elastic.Client, Indexs string) *LogMenu {
@@ -60,22 +59,15 @@ func (e *LogMenu) WriteToLogElastic() (*LogMenu, error) {
 func (e *LogMenu) ConfigLogPostgres(PostgresDB *gorm.DB, NameTable string) *LogMenu {
 	e.BoolPostgresLog = true
 	e.PostgresConfigLog.PostgresDB = PostgresDB
-	e.PostgresConfigLog.NameTable = NameTable
 	return e
 }
 
 func (e *LogMenu) WriteToLogPostgres() (*LogMenu, error) {
-	errCreate := e.PostgresConfigLog.PostgresDB.AutoMigrate(StandartLog{})
+	model := StandartLog{}
+	errCreate := e.PostgresConfigLog.PostgresDB.AutoMigrate(model)
 	if errCreate != nil {
 		fmt.Println("error :", errCreate)
 		return e, errCreate
-	}
-	if !e.PostgresConfigLog.PostgresDB.Migrator().HasTable(e.PostgresConfigLog.NameTable) {
-		err2 := e.PostgresConfigLog.PostgresDB.Migrator().RenameTable(e.PostgresConfigLog.PostgresLog, e.PostgresConfigLog.NameTable)
-		if err2 != nil {
-			fmt.Println("error :", err2)
-			return e, err2
-		}
 	}
 	err := e.PostgresConfigLog.PostgresDB.Debug().Create(&e.PostgresConfigLog.PostgresLog).Error
 	if err != nil {
