@@ -77,7 +77,7 @@ func (e *LogMenu) WriteToLogPostgres() (*LogMenu, error) {
 	return e, nil
 }
 
-func (e *LogMenu) Errors(index string, Message error, Level string, Location string, Request interface{}, Response interface{}) (*LogMenu, error) {
+func (e *LogMenu) Errors(Message error, Level string, Location string, Request interface{}, Response interface{}) (*LogMenu, error) {
 	data := StandartLog{}
 	data.Level = Level
 	data.Location = Location
@@ -108,12 +108,12 @@ func (e *LogMenu) Errors(index string, Message error, Level string, Location str
 	return e, nil
 }
 
-func (e *LogMenu) Success(Level string, Location string, Request interface{}, Response interface{}) (*LogMenu, error) {
+func (e *LogMenu) Success(Level string, Message string, Location string, Request interface{}, Response interface{}) (*LogMenu, error) {
 	data := StandartLog{}
 	data.Level = Level
 	data.Location = Location
 	data.TypeOfElastic = "Success"
-	data.Message = "Success"
+	data.Message = Message
 	data.Times = time.Now().String()
 	strRequest := fmt.Sprintf("%v", Request)
 	data.Request = strRequest
