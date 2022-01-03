@@ -1,6 +1,6 @@
 # Go-DERT-Log
 ## source package/ requirement
-github.com/olivere/elastic/v7 v7.0.30
+github.com/olivere/elastic/v7 v7.0.30**Enter**
 gorm.io/driver/postgres v1.2.3
 gorm.io/gorm v1.22.4
 ## import package
