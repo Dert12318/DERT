@@ -1,4 +1,8 @@
 # Go-DERT-Log
+## source package/ requirement
+github.com/olivere/elastic/v7 v7.0.30
+gorm.io/driver/postgres v1.2.3
+gorm.io/gorm v1.22.4
 ## import package
 conn "github.com/Dert12318/Go-DERT-Log/connection" //for connect to DB
 log "github.com/Dert12318/Go-DERT-Log/log" //for write Log in DB
